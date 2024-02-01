@@ -7,11 +7,13 @@ use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
 use App\Mail\LoginNotifications;
+use App\Mail\VerifyNotification;
 use App\Models\User;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class Usercontroller extends Controller
 {
@@ -35,11 +37,40 @@ class Usercontroller extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'verification_token' => Str::random(60),
         ]);
-
+        $this->emailurl($user);
         return response()->json([
             'message' => 'Registered',
             'token' => $user->createToken("API TOKEN")->plainTextToken,
+        ]);
+    }
+
+    protected function emailurl(User $user)
+    {
+        $url = url('/verfiy/' . $user->verification_token . '/' . $user->email);
+        Mail::to($user->email)->send(new VerifyNotification($url));
+    }
+
+    public function verify($token, $email)
+    {
+        $user = User::where('verification_token', $token)
+            ->where('email', $email)
+            ->first();
+
+        if (!$user) {
+            return response()->json([
+                'error' => 'error',
+            ], 401);
+        }
+
+        $user->update([
+            'verification_token' => null,
+            'email_verified_at' => now(),
+        ]);
+
+        return response()->json([
+            'message' => 'verified succesfully',
         ]);
     }
 

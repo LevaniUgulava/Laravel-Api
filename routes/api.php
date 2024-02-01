@@ -28,6 +28,8 @@ Route::post('/logout', [Usercontroller::class, 'logout']);
 Route::get('/index', [Usercontroller::class, 'index']);
 Route::get('/show/{id}', [Usercontroller::class, 'show']);
 
+Route::get('/verify/{token}/{email}', [Usercontroller::class, 'verify'])->name('verification.verify');
+
 //product route
 Route::post('/product/store', [ProductController::class, 'store'])
     ->middleware('auth:sanctum');

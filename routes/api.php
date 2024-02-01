@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\Usercontroller;
+use App\Http\Controllers\CommentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -20,12 +21,18 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+//login and user route
 Route::post('/register', [Usercontroller::class, 'register']);
 Route::post('/login', [Usercontroller::class, 'login']);
 Route::post('/logout', [Usercontroller::class, 'logout']);
 Route::get('/index', [Usercontroller::class, 'index']);
 Route::get('/show/{id}', [Usercontroller::class, 'show']);
 
+//product route
 Route::post('/product/store', [ProductController::class, 'store'])
-    ->middleware("auth:sanctum");
+    ->middleware('auth:sanctum');
 Route::get('/show/product/{id}', [ProductController::class, 'show']);
+
+//comment route
+Route::match(['get', 'post'], '/product/comment/{id}', [CommentController::class, 'comment'])->middleware('auth:sanctum');
+Route::match(['get', 'post'], '/product/comment/show/{id}', [CommentController::class, 'show']);

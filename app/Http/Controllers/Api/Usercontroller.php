@@ -6,10 +6,12 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
+use App\Mail\LoginNotifications;
 use App\Models\User;
 use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class Usercontroller extends Controller
 {
@@ -52,12 +54,18 @@ class Usercontroller extends Controller
         }
 
         Auth::login($user);
+        $this->mail($user);
 
         return response()->json([
             'message' => 'login succesfully',
             'token' => $user->createToken("API TOKEN")->plainTextToken,
         ]);
 
+    }
+
+    protected function mail($user)
+    {
+        Mail::to($user->email)->send(new LoginNotifications());
     }
 
     public function logout(User $user)

@@ -19,7 +19,7 @@ class CommentController extends Controller
 
     }
 
-    public function comment(Request $request, $id)
+    public function comment(Commentrequest $request, $id)
     {
 
         Comment::create([

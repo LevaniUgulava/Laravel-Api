@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Api\CarController;
+use App\Http\Controllers\Api\HouseController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\Usercontroller;
 use App\Http\Controllers\CommentController;
@@ -38,3 +40,10 @@ Route::get('/show/product/{id}', [ProductController::class, 'show']);
 //comment route
 Route::match(['get', 'post'], '/product/comment/{id}', [CommentController::class, 'comment'])->middleware('auth:sanctum');
 Route::match(['get', 'post'], '/product/comment/show/{id}', [CommentController::class, 'show']);
+
+//House route
+
+Route::post('/house/store', [HouseController::class, 'store'])->middleware('auth:sanctum');
+//Car route
+
+Route::post('/car/store', [CarController::class, 'store'])->middleware('auth:sanctum');

@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Requests\RegisterRequest;
 use App\Http\Resources\UserResource;
-use App\Mail\LoginNotifications;
 use App\Mail\VerifyNotification;
 use App\Models\User;
 use Illuminate\Auth\Events\Login;
@@ -85,18 +84,12 @@ class Usercontroller extends Controller
         }
 
         Auth::login($user);
-        $this->mail($user);
-
+        app(\App\Observers\UserObserver::class)->login($user);
         return response()->json([
             'message' => 'login succesfully',
             'token' => $user->createToken("API TOKEN")->plainTextToken,
         ]);
 
-    }
-
-    protected function mail($user)
-    {
-        Mail::to($user->email)->send(new LoginNotifications());
     }
 
     public function logout(User $user)
